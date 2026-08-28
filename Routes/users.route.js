@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getAllUsersController, getUserByIdController, createUserController, updateUserController, deleteUserController, getUserByNameController, getUserByEmailController } from '../Controllers/users.controller.js';
-import { authenticate } from "../Middleware/auth.middleware.js";
+import { authenticate, authorize } from "../Middleware/auth.middleware.js";
 const router = Router();
 
 // router.get('/', getAllUsersController);
@@ -11,7 +11,7 @@ const router = Router();
 // router.put('/:id', updateUserController);
 // router.delete('/:id', deleteUserController);
 //
-router.use(authenticate);
+router.use(authenticate, authorize("admin"));
 
 router.get("/", getAllUsersController);
 router.get("/:id", getUserByIdController);
