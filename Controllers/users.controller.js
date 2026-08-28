@@ -1,32 +1,58 @@
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser, getUserByName } from '../Services/users.services.js';
+import {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  getUserByName,
+  getUserByEmail,
+} from "../Services/users.services.js";
 
 // GetAllUsers
-export const getAllUsersController = (req, res) => {
-  const users = getAllUsers();
+export const getAllUsersController = async (req, res) => {
+  const users = await getAllUsers();
+
   res.json(users);
 };
+
 // GetUserById
-export const getUserByIdController = (req, res) => {
-  const user = getUserById(req.params.id);
+export const getUserByIdController = async (req, res) => {
+  const user = await getUserById(req.params.id);
+
   res.json(user);
 };
-//GetUserByName
-export const getUserByNameController = (req, res) => {
-  const user = getUserByName(req.params.first_name);
+
+// GetUserByName
+export const getUserByNameController = async (req, res) => {
+  const user = await getUserByName(req.params.first_name);
+
   res.json(user);
 };
+
+// GetUserByEmail
+export const getUserByEmailController = async (req, res) => {
+  const user = await getUserByEmail(req.params.email);
+
+  res.json(user);
+}
+
 // CreateUser
-export const createUserController = (req, res) => {
-  const newUser = createUser(req.body);
+export const createUserController = async (req, res) => {
+  const newUser = await createUser(req.body);
+
   res.json(newUser);
 };
+
 // UpdateUser
-export const updateUserController = (req, res) => {
-  const updatedUser = updateUser(req.params.id, req.body);
+export const updateUserController = async (req, res) => {
+  const updatedUser = await updateUser(req.params.id, req.body);
+
   res.json(updatedUser);
 };
+
 // DeleteUser
-export const deleteUserController = (req, res) => {
-  const deletedUser = deleteUser(req.params.id);
+export const deleteUserController = async (req, res) => {
+  const deletedUser = await deleteUser(req.params.id);
+
   res.json(deletedUser);
 };

@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import data from './Data/mock.json' with { type: 'json' };
 import app from './app.js';
 

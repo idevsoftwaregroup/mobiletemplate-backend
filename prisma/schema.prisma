@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+
+  firstName String
+  lastName  String?
+
+  email String @unique
+
+  passwordHash String?
+
+  avatarUrl String?
+
+  status String @default("active")
+
+  role String @default("user")
+
+  businesses Business[]
+
+  memberships BusinessMember[]
+
+  refreshTokens RefreshToken[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id String @id @default(uuid())
+
+  token String @unique
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model Business {
+  id String @id @default(uuid())
+
+  name String
+
+  slug String @unique
+
+  description String?
+
+  logoUrl String?
+
+  ownerId String
+
+  owner User @relation(fields: [ownerId], references: [id])
+
+  members BusinessMember[]
+
+  status String @default("active")
+
+  settings Json?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("businesses")
+}
+
+model BusinessMember {
+  id String @id @default(uuid())
+
+  businessId String
+
+  userId String
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role String @default("member")
+
+  permissions Json?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([businessId, userId])
+  @@map("business_members")
+}
