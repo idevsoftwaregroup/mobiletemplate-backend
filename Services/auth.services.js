@@ -19,7 +19,7 @@ export const loginUser = async (email, password) => {
   });
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw new Error("پسورد و یا ایمیل نامعتبر است !");
   }
 
   if (!user.passwordHash) {
@@ -29,7 +29,7 @@ export const loginUser = async (email, password) => {
   const validPassword = await bcrypt.compare(password, user.passwordHash);
 
   if (!validPassword) {
-    throw new Error("Invalid email or password");
+    throw new Error("پسورد و یا ایمیل نامعتبر است !");
   }
 
   if (user.status !== "active") {
