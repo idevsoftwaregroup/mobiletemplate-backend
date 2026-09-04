@@ -13,18 +13,22 @@ import {
   authorize,
 } from "../Middleware/auth.middleware.js";
 
+import upload from "../Middleware/upload.middleware.js";
+
 const router = Router();
 
 router.use(
-  authenticate,
-  authorize("admin")
+  authenticate
 );
 
 router.get("/", getAllProductsController);
 
 router.get("/:id", getProductByIdController);
 
-router.post("/", createProductController);
+// router.post("/", createProductController);
+
+router.post("/", upload.single("image"), createProductController);
+
 
 router.put("/:id", updateProductController);
 

@@ -6,19 +6,29 @@ import {
   deleteProduct,
 } from "../Services/products.services.js";
 
-export const getAllProductsController = async (req, res) => {
-  try {
+export const getAllProductsController = async(req,res)=>{
+
     const products = await getAllProducts();
 
-    res.status(200).json(products);
-  } catch (error) {
-    console.error(error);
 
-    res.status(500).json({
-      message: "Failed to fetch products",
-    });
-  }
-};
+    const result = products.map(product=>({
+
+        ...product,
+
+        imageUrl: product.imageUrl
+        ?
+        `/uploads/products/${product.imageUrl}`
+        :
+        null
+
+    }));
+
+
+    res.json(result);
+
+}
+
+
 
 export const getProductByIdController = async (req, res) => {
   try {
@@ -42,15 +52,21 @@ export const getProductByIdController = async (req, res) => {
 
 export const createProductController = async (req, res) => {
   try {
+
+    console.log("CREATE PRODUCT BODY:", req.body);
+
     const product = await createProduct(req.body);
 
     res.status(201).json(product);
+
   } catch (error) {
-    console.error(error);
+
+    console.error("CREATE PRODUCT ERROR:", error);
 
     res.status(500).json({
-      message: "Failed to create product",
+      message: error.message
     });
+
   }
 };
 
