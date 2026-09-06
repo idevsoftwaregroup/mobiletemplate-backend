@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
 
     cb(
       null,
-      "uploads/products"
+      "uploads/payments"
     );
 
   },
@@ -30,9 +30,10 @@ const storage = multer.diskStorage({
 
 
 
-const upload = multer({
+const uploadPayment = multer({
 
   storage,
+
 
   fileFilter(req,file,cb){
 
@@ -61,5 +62,4 @@ const upload = multer({
 });
 
 
-
-export default upload;
+export default uploadPayment;

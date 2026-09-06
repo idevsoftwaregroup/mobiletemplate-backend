@@ -4,17 +4,17 @@ import path from "path";
 
 const storage = multer.diskStorage({
 
-  destination: function(req, file, cb){
+  destination(req, file, cb){
 
     cb(
       null,
-      "uploads/products"
+      "uploads/pages"
     );
 
   },
 
 
-  filename: function(req, file, cb){
+  filename(req, file, cb){
 
     const ext = path.extname(file.originalname);
 
@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 
 
 
-const upload = multer({
+const uploadPage = multer({
 
   storage,
 
@@ -61,5 +61,4 @@ const upload = multer({
 });
 
 
-
-export default upload;
+export default uploadPage;

@@ -8,18 +8,13 @@ import {
   deleteProductController,
 } from "../Controllers/products.controller.js";
 
-import {
-  authenticate,
-  authorize,
-} from "../Middleware/auth.middleware.js";
+import { authenticate, authorize } from "../Middleware/auth.middleware.js";
 
 import upload from "../Middleware/upload.middleware.js";
 
 const router = Router();
 
-router.use(
-  authenticate
-);
+router.use(authenticate);
 
 router.get("/", getAllProductsController);
 
@@ -29,8 +24,9 @@ router.get("/:id", getProductByIdController);
 
 router.post("/", upload.single("image"), createProductController);
 
+// router.put("/:id", updateProductController);
 
-router.put("/:id", updateProductController);
+router.put("/:id", upload.single("image"), updateProductController);
 
 router.delete("/:id", deleteProductController);
 

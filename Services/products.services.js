@@ -1,14 +1,17 @@
 import prisma from "../Database/prisma.js";
 
-
 export const getAllProducts = async () => {
-  return await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     orderBy: {
       createdAt: "desc",
     },
   });
-};
 
+  console.log("DATABASE PRODUCTS:");
+  console.log(products);
+
+  return products;
+};
 
 export const getProductById = async (id) => {
   return await prisma.product.findUnique({
@@ -17,7 +20,6 @@ export const getProductById = async (id) => {
     },
   });
 };
-
 
 export const createProduct = async (data) => {
   return await prisma.product.create({
@@ -34,7 +36,6 @@ export const createProduct = async (data) => {
   });
 };
 
-
 export const updateProduct = async (id, data) => {
   return await prisma.product.update({
     where: {
@@ -45,14 +46,15 @@ export const updateProduct = async (id, data) => {
       slug: data.slug,
       description: data.description,
       price: Number(data.price),
-      imageUrl: data.imageUrl || null,
+      ...(data.imageUrl && {
+        imageUrl: data.imageUrl,
+      }),
       category: data.category || null,
       stock: Number(data.stock),
       status: data.status,
     },
   });
 };
-
 
 export const deleteProduct = async (id) => {
   return await prisma.product.delete({

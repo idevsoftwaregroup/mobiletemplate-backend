@@ -6,29 +6,27 @@ import {
   deleteProduct,
 } from "../Services/products.services.js";
 
-export const getAllProductsController = async(req,res)=>{
-
+export const getAllProductsController = async (req, res) => {
+  try {
     const products = await getAllProducts();
 
+    const result = products.map((product) => ({
+      ...product,
 
-    const result = products.map(product=>({
-
-        ...product,
-
-        imageUrl: product.imageUrl
-        ?
-        `/uploads/products/${product.imageUrl}`
-        :
-        null
-
+      imageUrl: product.imageUrl
+        ? `http://localhost:3000${product.imageUrl}`
+        : null,
     }));
 
-
     res.json(result);
+  } catch (error) {
+    console.error(error);
 
-}
-
-
+    res.status(500).json({
+      message: "Failed to fetch products",
+    });
+  }
+};
 
 export const getProductByIdController = async (req, res) => {
   try {
@@ -52,30 +50,33 @@ export const getProductByIdController = async (req, res) => {
 
 export const createProductController = async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
 
-    console.log("CREATE PRODUCT BODY:", req.body);
+    const product = await createProduct({
+      ...req.body,
 
-    const product = await createProduct(req.body);
+      imageUrl: req.file ? `/uploads/products/${req.file.filename}` : null,
+    });
 
     res.status(201).json(product);
-
   } catch (error) {
-
     console.error("CREATE PRODUCT ERROR:", error);
 
     res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
 };
 
 export const updateProductController = async (req, res) => {
   try {
-    const product = await updateProduct(
-      req.params.id,
-      req.body
-    );
+    const product = await updateProduct(req.params.id, {
+      ...req.body,
+      imageUrl: req.file
+        ? `/uploads/products/${req.file.filename}`
+        : req.body.imageUrl,
+    });
 
     res.status(200).json(product);
   } catch (error) {
