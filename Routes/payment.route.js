@@ -1,50 +1,14 @@
 import express from "express";
 
-import uploadPayment from "../Middleware/payment.upload.middleware.js";
-
 import {
-
-uploadReceiptController,
-getPendingPaymentsController,
-reviewPaymentController
-
+  getPaymentsController,
+  updatePaymentStatusController,
 } from "../Controllers/payment.controller.js";
-
 
 const router = express.Router();
 
+router.get("/", getPaymentsController);
 
-
-router.post(
-
-"/:id/receipt",
-
-uploadPayment.single("image"),
-
-uploadReceiptController
-
-);
-
-
-
-router.get(
-
-"/pending",
-
-getPendingPaymentsController
-
-);
-
-
-
-router.patch(
-
-"/:id/review",
-
-reviewPaymentController
-
-);
-
-
+router.patch("/:id/status", updatePaymentStatusController);
 
 export default router;

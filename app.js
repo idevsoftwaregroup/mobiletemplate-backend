@@ -24,16 +24,16 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.urlencoded({ extended:true }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
-app.use("/api/pages", pagesRouter)
+app.use("/api/pages", pagesRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/orders", ordersRouter);
-app.use("/api/payment",paymentRouter);
+app.use("/api/payments", paymentRouter);
 
 export default app;

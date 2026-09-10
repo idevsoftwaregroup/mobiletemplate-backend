@@ -33,24 +33,26 @@ model RefreshToken {
   userId    String
   expiresAt DateTime
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }
 
 model Business {
-  id          String           @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
-  slug        String           @unique
+  slug        String   @unique
   description String?
   logoUrl     String?
   ownerId     String
-  status      String           @default("active")
+  status      String   @default("active")
   settings    Json?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  members     BusinessMember[]
-  owner       User             @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members BusinessMember[]
+  owner   User             @relation(fields: [ownerId], references: [id])
 
   @@map("businesses")
 }
@@ -63,25 +65,27 @@ model BusinessMember {
   permissions Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([businessId, userId])
   @@map("business_members")
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
-  slug        String   @unique
+  slug        String  @unique
   description String?
-  price       Decimal  @db.Decimal(18, 2)
+  price       Decimal @db.Decimal(18, 2)
   imageUrl    String?
   category    String?
-  stock       Int      @default(0)
-  status      String   @default("active")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  stock       Int     @default(0)
+  status      String  @default("active")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   orderItems OrderItem[]
 
@@ -113,29 +117,42 @@ model Page {
 }
 
 model Order {
-  id          String  @id @default(uuid())
-  userId      String
-  status      String  @default("pending")
+  id String @id @default(uuid())
+
+  userId String
+
+  status OrderStatus @default(PENDING)
+
+  paymentStatus PaymentStatus @default(UNPAID)
+
   totalAmount Decimal @db.Decimal(18, 2)
 
   createdAt DateTime @default(now())
+
   updatedAt DateTime @updatedAt
 
-  user    User        @relation(fields: [userId], references: [id])
-  items   OrderItem[]
-  payment Payment?
+  user User @relation(fields: [userId], references: [id])
+
+  items OrderItem[]
+
+  payments Payment[]
 
   @@map("orders")
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String
-  productId String
-  quantity  Int     @default(1)
-  price     Decimal @db.Decimal(18, 2)
+  id String @id @default(uuid())
 
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  productId String
+
+  quantity Int @default(1)
+
+  price Decimal @db.Decimal(18, 2)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
   product Product @relation(fields: [productId], references: [id])
 
   @@map("order_items")
@@ -144,11 +161,11 @@ model OrderItem {
 model Payment {
   id String @id @default(uuid())
 
-  orderId String @unique
+  orderId String
 
   amount Decimal @db.Decimal(18, 2)
 
-  status String @default("pending_review")
+  status PaymentStatus @default(PENDING)
 
   paymentMethod String @default("manual")
 
@@ -169,4 +186,30 @@ model Payment {
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("payments")
+}
+
+enum OrderStatus {
+  PENDING
+
+  CONFIRMED
+
+  PROCESSING
+
+  SHIPPED
+
+  DELIVERED
+
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+
+  PENDING
+
+  PAID
+
+  FAILED
+
+  REFUNDED
 }

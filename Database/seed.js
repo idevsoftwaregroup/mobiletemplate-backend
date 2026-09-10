@@ -144,10 +144,15 @@ async function main() {
   // ORDERS
   // =========================================================
 
+  // =========================================================
+  // ORDERS
+  // =========================================================
+
   const order1 = await prisma.order.create({
     data: {
       userId: arash.id,
-      status: "paid",
+      status: "PROCESSING",
+      paymentStatus: "PAID",
       totalAmount: 125000000,
 
       items: {
@@ -158,14 +163,12 @@ async function main() {
         },
       },
 
-      payment: {
+      payments: {
         create: {
-          provider: "zarinpal",
           amount: 125000000,
-          status: "paid",
-          authority: "TEST-AUTHORITY-001",
-          transactionId: "TEST-TRANSACTION-001",
-          paidAt: new Date(),
+          status: "PAID",
+          paymentMethod: "zarinpal",
+          trackingCode: "TEST-TRANSACTION-001",
         },
       },
     },
@@ -174,7 +177,8 @@ async function main() {
   const order2 = await prisma.order.create({
     data: {
       userId: userOne.id,
-      status: "pending",
+      status: "PENDING",
+      paymentStatus: "UNPAID",
       totalAmount: 85000000,
 
       items: {
@@ -185,12 +189,12 @@ async function main() {
         },
       },
 
-      payment: {
+      payments: {
         create: {
-          provider: "zarinpal",
           amount: 85000000,
-          status: "pending",
-          authority: "TEST-AUTHORITY-002",
+          status: "PENDING",
+          paymentMethod: "zarinpal",
+          trackingCode: "TEST-TRANSACTION-002",
         },
       },
     },
@@ -199,7 +203,8 @@ async function main() {
   const order3 = await prisma.order.create({
     data: {
       userId: arash.id,
-      status: "paid",
+      status: "DELIVERED",
+      paymentStatus: "PAID",
       totalAmount: 42000000,
 
       items: {
@@ -210,14 +215,12 @@ async function main() {
         },
       },
 
-      payment: {
+      payments: {
         create: {
-          provider: "zarinpal",
           amount: 42000000,
-          status: "paid",
-          authority: "TEST-AUTHORITY-003",
-          transactionId: "TEST-TRANSACTION-003",
-          paidAt: new Date(),
+          status: "PAID",
+          paymentMethod: "zarinpal",
+          trackingCode: "TEST-TRANSACTION-003",
         },
       },
     },
@@ -226,7 +229,8 @@ async function main() {
   const order4 = await prisma.order.create({
     data: {
       userId: userOne.id,
-      status: "canceled",
+      status: "CANCELLED",
+      paymentStatus: "FAILED",
       totalAmount: 18000000,
 
       items: {
@@ -237,12 +241,12 @@ async function main() {
         },
       },
 
-      payment: {
+      payments: {
         create: {
-          provider: "zarinpal",
           amount: 18000000,
-          status: "failed",
-          authority: "TEST-AUTHORITY-004",
+          status: "FAILED",
+          paymentMethod: "zarinpal",
+          trackingCode: "TEST-TRANSACTION-004",
         },
       },
     },
@@ -251,7 +255,8 @@ async function main() {
   const order5 = await prisma.order.create({
     data: {
       userId: arash.id,
-      status: "paid",
+      status: "CONFIRMED",
+      paymentStatus: "PAID",
       totalAmount: 103000000,
 
       items: {
@@ -269,14 +274,12 @@ async function main() {
         ],
       },
 
-      payment: {
+      payments: {
         create: {
-          provider: "zarinpal",
           amount: 103000000,
-          status: "paid",
-          authority: "TEST-AUTHORITY-005",
-          transactionId: "TEST-TRANSACTION-005",
-          paidAt: new Date(),
+          status: "PAID",
+          paymentMethod: "zarinpal",
+          trackingCode: "TEST-TRANSACTION-005",
         },
       },
     },
@@ -307,11 +310,11 @@ async function main() {
 
   console.log("\n🛒 ORDERS");
   console.log("----------------------------------------");
-  console.log(`Order 1 : ${order1.id} | PAID`);
+  console.log(`Order 1 : ${order1.id} | CONFIRMED`);
   console.log(`Order 2 : ${order2.id} | PENDING`);
-  console.log(`Order 3 : ${order3.id} | PAID`);
+  console.log(`Order 3 : ${order3.id} | CONFIRMED`);
   console.log(`Order 4 : ${order4.id} | CANCELED`);
-  console.log(`Order 5 : ${order5.id} | PAID`);
+  console.log(`Order 5 : ${order5.id} | CONFIRMED`);
 
   console.log("\n========================================\n");
 }

@@ -1,59 +1,30 @@
 import {
-  uploadReceipt,
-  getPendingPayments,
-  reviewPayment,
+  getPayments,
+  updatePaymentStatus,
 } from "../Services/payment.services.js";
 
-export const uploadReceiptController = async (req, res) => {
+export const getPaymentsController = async (req, res) => {
   try {
-    const payment = await uploadReceipt(
-      req.params.id,
-
-      req.file ? `/uploads/payments/${req.file.filename}` : null,
-    );
-
-    res.json(payment);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-export const getPendingPaymentsController = async (req, res) => {
-  try {
-    const payments = await getPendingPayments();
+    const payments = await getPayments();
 
     res.json(payments);
   } catch (error) {
-    console.error(error);
-
     res.status(500).json({
       message: error.message,
     });
   }
 };
 
-export const reviewPaymentController = async (req, res) => {
+export const updatePaymentStatusController = async (req, res) => {
   try {
-    const { status, note } = req.body;
+    const { id } = req.params;
 
-    const payment = await reviewPayment(
-      req.params.id,
+    const { status } = req.body;
 
-      status,
-
-      "ADMIN_ID",
-
-      note,
-    );
+    const payment = await updatePaymentStatus(id, status);
 
     res.json(payment);
   } catch (error) {
-    console.error(error);
-
     res.status(500).json({
       message: error.message,
     });

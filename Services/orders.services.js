@@ -7,7 +7,9 @@ export const createOrder = async (data) => {
 
       totalAmount: data.totalAmount,
 
-      status: "pending",
+      status: "PENDING",
+
+      paymentStatus: "UNPAID",
 
       items: {
         create: data.items.map((item) => ({
@@ -31,7 +33,7 @@ export const createOrder = async (data) => {
 
       amount: order.totalAmount,
 
-      status: "pending_review",
+      status: "PENDING",
 
       paymentMethod: "manual",
     },
@@ -51,12 +53,34 @@ export const getAllOrders = async () => {
         },
       },
 
-      payment: true,
+      payments: true,
     },
 
     orderBy: {
       createdAt: "desc",
     },
+  });
+};
+
+export const getRecentOrders = async (limit = 3) => {
+  return await prisma.order.findMany({
+    include: {
+      user: true,
+
+      items: {
+        include: {
+          product: true,
+        },
+      },
+
+      payments: true,
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+
+    take: limit,
   });
 };
 
@@ -67,9 +91,13 @@ export const getOrderById = async (id) => {
     },
 
     include: {
-      items: true,
+      items: {
+        include: {
+          product: true,
+        },
+      },
 
-      payment: true,
+      payments: true,
     },
   });
 };
@@ -81,7 +109,7 @@ export const updateOrderStatus = async (id, status) => {
     },
 
     data: {
-      status,
+      status: status.toUpperCase(),
     },
   });
 };

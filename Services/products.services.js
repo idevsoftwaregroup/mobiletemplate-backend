@@ -7,8 +7,8 @@ export const getAllProducts = async () => {
     },
   });
 
-  console.log("DATABASE PRODUCTS:");
-  console.log(products);
+  // console.log("DATABASE PRODUCTS:");
+  // console.log(products);
 
   return products;
 };
