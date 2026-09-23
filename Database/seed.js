@@ -4,16 +4,14 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting database seed...\n");
+  console.log("🌱 Starting database seed ...\n");
 
   // =========================================================
   // PASSWORDS
   // =========================================================
 
   const passwordHash = await bcrypt.hash("Admin@123456", 10);
-
   const arashPasswordHash = await bcrypt.hash("Admin123", 10);
-
   const userPasswordHash = await bcrypt.hash("Admin123", 10);
 
   // =========================================================
@@ -24,7 +22,13 @@ async function main() {
     where: {
       email: "admin@mobiletemplate.com",
     },
-    update: {},
+    update: {
+      firstName: "Admin",
+      lastName: "User",
+      passwordHash,
+      role: "admin",
+      status: "active",
+    },
     create: {
       firstName: "Admin",
       lastName: "User",
@@ -39,7 +43,13 @@ async function main() {
     where: {
       email: "arash.ataei.71@gmail.com",
     },
-    update: {},
+    update: {
+      firstName: "Arash",
+      lastName: "Ataei",
+      passwordHash: arashPasswordHash,
+      role: "user",
+      status: "active",
+    },
     create: {
       firstName: "Arash",
       lastName: "Ataei",
@@ -54,7 +64,13 @@ async function main() {
     where: {
       email: "userOne@test.com",
     },
-    update: {},
+    update: {
+      firstName: "User",
+      lastName: "One",
+      passwordHash: userPasswordHash,
+      role: "user",
+      status: "active",
+    },
     create: {
       firstName: "User",
       lastName: "One",
@@ -66,74 +82,108 @@ async function main() {
   });
 
   console.log("✅ Users created");
-  console.log(`   Admin: ${admin.email}`);
-  console.log(`   Arash: ${arash.email}`);
+  console.log(`   Admin   : ${admin.email}`);
+  console.log(`   Arash   : ${arash.email}`);
   console.log(`   User One: ${userOne.email}`);
 
   // =========================================================
   // PRODUCTS
   // =========================================================
 
-  const macbook = await prisma.product.upsert({
+  const stressCourse = await prisma.product.upsert({
     where: {
-      slug: "macbook-pro",
+      slug: "stress-anxiety-management-course",
     },
-    update: {},
+    update: {
+      name: "دوره مدیریت استرس و اضطراب",
+      description:
+        "دوره جامع آموزشی برای شناخت عوامل استرس، تکنیک‌های آرام‌سازی، کنترل اضطراب و بهبود کیفیت زندگی.",
+      price: 2500000,
+      category: "دوره آموزشی",
+      stock: 100,
+      status: "active",
+    },
     create: {
-      name: "MacBook Pro",
-      slug: "macbook-pro",
-      description: "Apple MacBook Pro",
-      price: 125000000,
-      category: "Laptop",
-      stock: 10,
+      name: "دوره مدیریت استرس و اضطراب",
+      slug: "stress-anxiety-management-course",
+      description:
+        "دوره جامع آموزشی برای شناخت عوامل استرس، تکنیک‌های آرام‌سازی، کنترل اضطراب و بهبود کیفیت زندگی.",
+      price: 2500000,
+      category: "دوره آموزشی",
+      stock: 100,
       status: "active",
     },
   });
 
-  const iphone = await prisma.product.upsert({
+  const personalityBook = await prisma.product.upsert({
     where: {
-      slug: "iphone-17-pro",
+      slug: "personality-psychology-book",
     },
-    update: {},
+    update: {
+      name: "کتاب روانشناسی شخصیت",
+      description:
+        "کتاب آموزشی درباره شناخت تیپ‌های شخصیتی، رفتار انسان و توسعه فردی.",
+      price: 450000,
+      category: "کتاب",
+      stock: 50,
+      status: "active",
+    },
     create: {
-      name: "iPhone 17 Pro",
-      slug: "iphone-17-pro",
-      description: "Apple iPhone 17 Pro",
-      price: 85000000,
-      category: "Smartphone",
-      stock: 20,
+      name: "کتاب روانشناسی شخصیت",
+      slug: "personality-psychology-book",
+      description:
+        "کتاب آموزشی درباره شناخت تیپ‌های شخصیتی، رفتار انسان و توسعه فردی.",
+      price: 450000,
+      category: "کتاب",
+      stock: 50,
       status: "active",
     },
   });
 
-  const appleWatch = await prisma.product.upsert({
+  const counselingSession = await prisma.product.upsert({
     where: {
-      slug: "apple-watch-series-11",
+      slug: "online-individual-counseling-session",
     },
-    update: {},
+    update: {
+      name: "جلسه مشاوره فردی آنلاین",
+      description:
+        "یک جلسه 60 دقیقه‌ای مشاوره آنلاین با متخصص روانشناسی برای بررسی مسائل فردی.",
+      price: 1200000,
+      category: "مشاوره",
+      stock: 999,
+      status: "active",
+    },
     create: {
-      name: "Apple Watch Series 11",
-      slug: "apple-watch-series-11",
-      description: "Apple Watch Series 11",
-      price: 42000000,
-      category: "Watch",
-      stock: 15,
+      name: "جلسه مشاوره فردی آنلاین",
+      slug: "online-individual-counseling-session",
+      description:
+        "یک جلسه 60 دقیقه‌ای مشاوره آنلاین با متخصص روانشناسی برای بررسی مسائل فردی.",
+      price: 1200000,
+      category: "مشاوره",
+      stock: 999,
       status: "active",
     },
   });
 
-  const airpods = await prisma.product.upsert({
+  const mbtiTest = await prisma.product.upsert({
     where: {
-      slug: "airpods-pro-3",
+      slug: "mbti-personality-test",
     },
-    update: {},
+    update: {
+      name: "تست شخصیت شناسی MBTI",
+      description: "ارزیابی شخصیت بر اساس مدل MBTI به همراه گزارش تحلیل شخصیت.",
+      price: 350000,
+      category: "تست روانشناسی",
+      stock: 999,
+      status: "active",
+    },
     create: {
-      name: "AirPods Pro 3",
-      slug: "airpods-pro-3",
-      description: "Apple AirPods Pro 3",
-      price: 18000000,
-      category: "Audio",
-      stock: 30,
+      name: "تست شخصیت شناسی MBTI",
+      slug: "mbti-personality-test",
+      description: "ارزیابی شخصیت بر اساس مدل MBTI به همراه گزارش تحلیل شخصیت.",
+      price: 350000,
+      category: "تست روانشناسی",
+      stock: 999,
       status: "active",
     },
   });
@@ -141,8 +191,33 @@ async function main() {
   console.log("\n✅ Products created");
 
   // =========================================================
-  // ORDERS
+  // REMOVE PREVIOUS DEMO ORDERS
   // =========================================================
+
+  const demoPayments = await prisma.payment.findMany({
+    where: {
+      trackingCode: {
+        startsWith: "TEST-TRANSACTION-",
+      },
+    },
+    select: {
+      orderId: true,
+    },
+  });
+
+  const demoOrderIds = [
+    ...new Set(demoPayments.map((payment) => payment.orderId)),
+  ];
+
+  if (demoOrderIds.length > 0) {
+    await prisma.order.deleteMany({
+      where: {
+        id: {
+          in: demoOrderIds,
+        },
+      },
+    });
+  }
 
   // =========================================================
   // ORDERS
@@ -153,19 +228,17 @@ async function main() {
       userId: arash.id,
       status: "PROCESSING",
       paymentStatus: "PAID",
-      totalAmount: 125000000,
-
+      totalAmount: 2500000,
       items: {
         create: {
-          productId: macbook.id,
+          productId: stressCourse.id,
           quantity: 1,
-          price: 125000000,
+          price: 2500000,
         },
       },
-
       payments: {
         create: {
-          amount: 125000000,
+          amount: 2500000,
           status: "PAID",
           paymentMethod: "zarinpal",
           trackingCode: "TEST-TRANSACTION-001",
@@ -179,19 +252,17 @@ async function main() {
       userId: userOne.id,
       status: "PENDING",
       paymentStatus: "UNPAID",
-      totalAmount: 85000000,
-
+      totalAmount: 450000,
       items: {
         create: {
-          productId: iphone.id,
+          productId: personalityBook.id,
           quantity: 1,
-          price: 85000000,
+          price: 450000,
         },
       },
-
       payments: {
         create: {
-          amount: 85000000,
+          amount: 450000,
           status: "PENDING",
           paymentMethod: "zarinpal",
           trackingCode: "TEST-TRANSACTION-002",
@@ -205,19 +276,17 @@ async function main() {
       userId: arash.id,
       status: "DELIVERED",
       paymentStatus: "PAID",
-      totalAmount: 42000000,
-
+      totalAmount: 1200000,
       items: {
         create: {
-          productId: appleWatch.id,
+          productId: counselingSession.id,
           quantity: 1,
-          price: 42000000,
+          price: 1200000,
         },
       },
-
       payments: {
         create: {
-          amount: 42000000,
+          amount: 1200000,
           status: "PAID",
           paymentMethod: "zarinpal",
           trackingCode: "TEST-TRANSACTION-003",
@@ -231,19 +300,17 @@ async function main() {
       userId: userOne.id,
       status: "CANCELLED",
       paymentStatus: "FAILED",
-      totalAmount: 18000000,
-
+      totalAmount: 350000,
       items: {
         create: {
-          productId: airpods.id,
+          productId: mbtiTest.id,
           quantity: 1,
-          price: 18000000,
+          price: 350000,
         },
       },
-
       payments: {
         create: {
-          amount: 18000000,
+          amount: 350000,
           status: "FAILED",
           paymentMethod: "zarinpal",
           trackingCode: "TEST-TRANSACTION-004",
@@ -257,26 +324,24 @@ async function main() {
       userId: arash.id,
       status: "CONFIRMED",
       paymentStatus: "PAID",
-      totalAmount: 103000000,
-
+      totalAmount: 800000,
       items: {
         create: [
           {
-            productId: iphone.id,
+            productId: personalityBook.id,
             quantity: 1,
-            price: 85000000,
+            price: 450000,
           },
           {
-            productId: airpods.id,
+            productId: mbtiTest.id,
             quantity: 1,
-            price: 18000000,
+            price: 350000,
           },
         ],
       },
-
       payments: {
         create: {
-          amount: 103000000,
+          amount: 800000,
           status: "PAID",
           paymentMethod: "zarinpal",
           trackingCode: "TEST-TRANSACTION-005",
@@ -299,21 +364,21 @@ async function main() {
   console.log("----------------------------------------");
   console.log(`Admin    : ${admin.email}`);
   console.log(`Arash    : ${arash.email}`);
-  console.log(`User One : ${userOne.email}`);
+  console.log(`User One  : ${userOne.email}`);
 
   console.log("\n📦 PRODUCTS");
   console.log("----------------------------------------");
-  console.log(`MacBook Pro       : ${macbook.id}`);
-  console.log(`iPhone 17 Pro     : ${iphone.id}`);
-  console.log(`Apple Watch       : ${appleWatch.id}`);
-  console.log(`AirPods Pro       : ${airpods.id}`);
+  console.log(`Stress Course      : ${stressCourse.id}`);
+  console.log(`Psychology Book    : ${personalityBook.id}`);
+  console.log(`Counseling Session : ${counselingSession.id}`);
+  console.log(`MBTI Test          : ${mbtiTest.id}`);
 
   console.log("\n🛒 ORDERS");
   console.log("----------------------------------------");
-  console.log(`Order 1 : ${order1.id} | CONFIRMED`);
+  console.log(`Order 1 : ${order1.id} | PROCESSING`);
   console.log(`Order 2 : ${order2.id} | PENDING`);
-  console.log(`Order 3 : ${order3.id} | CONFIRMED`);
-  console.log(`Order 4 : ${order4.id} | CANCELED`);
+  console.log(`Order 3 : ${order3.id} | DELIVERED`);
+  console.log(`Order 4 : ${order4.id} | CANCELLED`);
   console.log(`Order 5 : ${order5.id} | CONFIRMED`);
 
   console.log("\n========================================\n");

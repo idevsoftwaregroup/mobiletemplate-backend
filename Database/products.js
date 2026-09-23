@@ -1,5 +1,8 @@
-const psychologyProducts = [
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
+
+const psychologyProducts = [
   {
     name: "دوره مدیریت استرس و اضطراب",
     slug: "stress-anxiety-management-course",
@@ -10,7 +13,6 @@ const psychologyProducts = [
     stock: 100,
     status: "active",
   },
-
   {
     name: "کتاب روانشناسی شخصیت",
     slug: "personality-psychology-book",
@@ -21,7 +23,6 @@ const psychologyProducts = [
     stock: 50,
     status: "active",
   },
-
   {
     name: "جلسه مشاوره فردی آنلاین",
     slug: "online-individual-counseling-session",
@@ -32,18 +33,15 @@ const psychologyProducts = [
     stock: 999,
     status: "active",
   },
-
   {
     name: "تست شخصیت شناسی MBTI",
     slug: "mbti-personality-test",
-    description:
-      "ارزیابی شخصیت بر اساس مدل MBTI به همراه گزارش تحلیل شخصیت.",
+    description: "ارزیابی شخصیت بر اساس مدل MBTI به همراه گزارش تحلیل شخصیت.",
     price: 350000,
     category: "تست روانشناسی",
     stock: 999,
     status: "active",
   },
-
   {
     name: "دوره افزایش اعتماد به نفس",
     slug: "self-confidence-development-course",
@@ -54,7 +52,6 @@ const psychologyProducts = [
     stock: 100,
     status: "active",
   },
-
   {
     name: "کارگاه زوج درمانی و بهبود روابط",
     slug: "couples-therapy-workshop",
@@ -65,7 +62,6 @@ const psychologyProducts = [
     stock: 80,
     status: "active",
   },
-
   {
     name: "فایل صوتی مدیتیشن و آرامش ذهن",
     slug: "mindfulness-meditation-audio",
@@ -76,7 +72,6 @@ const psychologyProducts = [
     stock: 9999,
     status: "active",
   },
-
   {
     name: "دوره روانشناسی کودک و والدین",
     slug: "child-parent-psychology-course",
@@ -87,27 +82,57 @@ const psychologyProducts = [
     stock: 100,
     status: "active",
   },
-
   {
     name: "جلسه کوچینگ توسعه فردی",
     slug: "personal-development-coaching",
-    description:
-      "جلسه کوچینگ برای هدف‌گذاری، رشد فردی و بهبود عملکرد شخصی.",
+    description: "جلسه کوچینگ برای هدف‌گذاری، رشد فردی و بهبود عملکرد شخصی.",
     price: 1500000,
     category: "کوچینگ",
     stock: 999,
     status: "active",
   },
-
   {
     name: "آزمون سلامت روان عمومی GHQ",
     slug: "ghq-mental-health-test",
-    description:
-      "ارزیابی وضعیت عمومی سلامت روان با گزارش تحلیل نتایج.",
+    description: "ارزیابی وضعیت عمومی سلامت روان با گزارش تحلیل نتایج.",
     price: 400000,
     category: "تست روانشناسی",
     stock: 999,
     status: "active",
   },
-
 ];
+
+async function main() {
+  console.log("🌱 Creating psychology products...\n");
+
+  for (const product of psychologyProducts) {
+    const createdProduct = await prisma.product.upsert({
+      where: {
+        slug: product.slug,
+      },
+      update: {
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        category: product.category,
+        stock: product.stock,
+        status: product.status,
+      },
+      create: product,
+    });
+
+    console.log(`✅ ${createdProduct.name} | ${createdProduct.id}`);
+  }
+
+  console.log("\n🎉 Products seed completed");
+}
+
+main()
+  .catch((error) => {
+    console.error("❌ Seed failed:");
+    console.error(error);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
