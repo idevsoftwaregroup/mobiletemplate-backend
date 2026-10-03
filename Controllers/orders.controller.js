@@ -9,13 +9,43 @@ import {
 // CREATE ORDER
 export const createOrderController = async (req, res) => {
   try {
-    const order = await createOrder(req.body);
+    const userId = req.user?.userId ?? req.user?.id ?? req.user?.sub;
 
-    res.status(201).json(order);
+    if (!userId) {
+      return res.status(401).json({
+        message: "Authentication required",
+      });
+    }
+
+    let items;
+
+    try {
+      items = JSON.parse(req.body?.items || "[]");
+    } catch {
+      return res.status(400).json({
+        message: "Invalid order items",
+      });
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        message: "Order must contain at least one item",
+      });
+    }
+
+    const order = await createOrder({
+      userId,
+      items,
+      trackingCode: req.body?.trackingCode || null,
+      description: req.body?.description || null,
+      receiptImage: req.file ? `/uploads/receipts/${req.file.filename}` : null,
+    });
+
+    return res.status(201).json(order);
   } catch (error) {
-    console.error(error);
+    console.error("CREATE ORDER ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to create order",
       error: error.message,
     });
@@ -26,12 +56,11 @@ export const createOrderController = async (req, res) => {
 export const getOrdersController = async (req, res) => {
   try {
     const orders = await getAllOrders();
-
-    res.json(orders);
+    return res.json(orders);
   } catch (error) {
-    console.error(error);
+    console.error("GET ORDERS ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to fetch orders",
       error: error.message,
     });
@@ -49,11 +78,11 @@ export const getOrderByIdController = async (req, res) => {
       });
     }
 
-    res.json(order);
+    return res.json(order);
   } catch (error) {
-    console.error(error);
+    console.error("GET ORDER ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to fetch order",
       error: error.message,
     });
@@ -65,13 +94,19 @@ export const updateOrderStatusController = async (req, res) => {
   try {
     const { status } = req.body;
 
+    if (!status) {
+      return res.status(400).json({
+        message: "Order status is required",
+      });
+    }
+
     const order = await updateOrderStatus(req.params.id, status);
 
-    res.json(order);
+    return res.json(order);
   } catch (error) {
-    console.error(error);
+    console.error("UPDATE ORDER STATUS ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to update order status",
       error: error.message,
     });
@@ -85,11 +120,11 @@ export const getRecentOrdersController = async (req, res) => {
 
     const orders = await getRecentOrders(limit);
 
-    res.json(orders);
+    return res.json(orders);
   } catch (error) {
-    console.error(error);
+    console.error("GET RECENT ORDERS ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to fetch recent orders",
       error: error.message,
     });

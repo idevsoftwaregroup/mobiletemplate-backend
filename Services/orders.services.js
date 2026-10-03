@@ -1,42 +1,103 @@
 import prisma from "../Database/prisma.js";
 
 export const createOrder = async (data) => {
-  const order = await prisma.order.create({
-    data: {
-      userId: data.userId,
+  if (!data?.userId) {
+    throw new Error("User is not authenticated");
+  }
 
-      totalAmount: data.totalAmount,
+  if (!Array.isArray(data.items) || data.items.length === 0) {
+    throw new Error("Order must contain at least one item");
+  }
 
-      status: "PENDING",
+  const productIds = [...new Set(data.items.map((item) => item.productId))];
 
-      paymentStatus: "UNPAID",
-
-      items: {
-        create: data.items.map((item) => ({
-          productId: item.productId,
-
-          quantity: item.quantity,
-
-          price: item.price,
-        })),
+  const products = await prisma.product.findMany({
+    where: {
+      id: {
+        in: productIds,
       },
-    },
-
-    include: {
-      items: true,
+      status: "active",
     },
   });
 
-  await prisma.payment.create({
-    data: {
-      orderId: order.id,
+  if (products.length !== productIds.length) {
+    throw new Error("One or more products are invalid or unavailable");
+  }
 
-      amount: order.totalAmount,
+  const productMap = new Map(products.map((product) => [product.id, product]));
 
-      status: "PENDING",
+  const orderItems = data.items.map((item) => {
+    const product = productMap.get(item.productId);
 
-      paymentMethod: "manual",
-    },
+    if (!product) {
+      throw new Error(`Product not found: ${item.productId}`);
+    }
+
+    const quantity = Number(item.quantity);
+
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      throw new Error(`Invalid quantity for product: ${product.name}`);
+    }
+
+    if (quantity > product.stock) {
+      throw new Error(`Insufficient stock for product: ${product.name}`);
+    }
+
+    return {
+      productId: product.id,
+      quantity,
+      price: product.price,
+    };
+  });
+
+  /*
+   * Total price is calculated on the server.
+   * Do not trust totalAmount sent from the frontend.
+   */
+  const totalAmount = orderItems.reduce(
+    (total, item) => total + Number(item.price) * item.quantity,
+    0,
+  );
+
+  const order = await prisma.$transaction(async (tx) => {
+    const createdOrder = await tx.order.create({
+      data: {
+        userId: data.userId,
+        totalAmount,
+        status: "PENDING",
+        paymentStatus: "UNPAID",
+
+        items: {
+          create: orderItems,
+        },
+      },
+
+      include: {
+        user: true,
+
+        items: {
+          include: {
+            product: true,
+          },
+        },
+
+        payments: true,
+      },
+    });
+
+    await tx.payment.create({
+      data: {
+        orderId: createdOrder.id,
+        amount: totalAmount,
+        status: "PENDING",
+        paymentMethod: "manual",
+        trackingCode: data.trackingCode,
+        adminNote: data.description,
+        receiptImage: data.receiptImage,
+      },
+    });
+
+    return createdOrder;
   });
 
   return order;
@@ -91,6 +152,8 @@ export const getOrderById = async (id) => {
     },
 
     include: {
+      user: true,
+
       items: {
         include: {
           product: true,

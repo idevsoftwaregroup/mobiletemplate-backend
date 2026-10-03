@@ -1,6 +1,7 @@
 import {
   getAllPages,
   getPageById,
+  getPageBySlug,
   createPage,
   updatePage,
   deletePage,
@@ -12,7 +13,7 @@ export const getAllPagesController = async (req, res) => {
 
     res.json(pages);
   } catch (error) {
-    console.error(error);
+    console.error("GET PAGES ERROR:", error);
 
     res.status(500).json({
       message: "Failed to fetch pages",
@@ -32,21 +33,44 @@ export const getPageByIdController = async (req, res) => {
 
     res.json(page);
   } catch (error) {
+    console.error("GET PAGE ERROR:", error);
+
     res.status(500).json({
-      message: "Failed",
+      message: "Failed to fetch page",
+    });
+  }
+};
+
+export const getPageBySlugController = async (req, res) => {
+  try {
+    const page = await getPageBySlug(req.params.slug);
+
+    if (!page) {
+      return res.status(404).json({
+        message: "Page not found",
+      });
+    }
+
+    if (page.status !== "active") {
+      return res.status(404).json({
+        message: "Page not found",
+      });
+    }
+
+    res.json(page);
+  } catch (error) {
+    console.error("GET PAGE BY SLUG ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch page",
     });
   }
 };
 
 export const createPageController = async (req, res) => {
   try {
-    console.log("PAGE BODY:", req.body);
-
-    console.log("PAGE FILE:", req.file);
-
     const data = {
       ...req.body,
-
       imageUrl: req.file ? `/uploads/pages/${req.file.filename}` : null,
     };
 
@@ -54,7 +78,7 @@ export const createPageController = async (req, res) => {
 
     res.status(201).json(page);
   } catch (error) {
-    console.error(error);
+    console.error("CREATE PAGE ERROR:", error);
 
     res.status(500).json({
       message: error.message,
@@ -64,12 +88,22 @@ export const createPageController = async (req, res) => {
 
 export const updatePageController = async (req, res) => {
   try {
-    const page = await updatePage(req.params.id, req.body);
+    const data = {
+      ...req.body,
+    };
+
+    if (req.file) {
+      data.imageUrl = `/uploads/pages/${req.file.filename}`;
+    }
+
+    const page = await updatePage(req.params.id, data);
 
     res.json(page);
   } catch (error) {
+    console.error("UPDATE PAGE ERROR:", error);
+
     res.status(500).json({
-      message: "Failed update",
+      message: error.message || "Failed update",
     });
   }
 };
@@ -82,6 +116,8 @@ export const deletePageController = async (req, res) => {
       message: "Page deleted",
     });
   } catch (error) {
+    console.error("DELETE PAGE ERROR:", error);
+
     res.status(500).json({
       message: "Failed delete",
     });
