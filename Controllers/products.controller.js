@@ -13,9 +13,7 @@ export const getAllProductsController = async (req, res) => {
     const result = products.map((product) => ({
       ...product,
 
-      imageUrl: product.imageUrl
-        ? `http://localhost:3000${product.imageUrl}`
-        : null,
+      imageUrl: `http://192.168.5.239:3000${product.imageUrl}` || null,
     }));
 
     res.json(result);
